@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asma-ul-Husna · Notre parcours à deux</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,500&family=Amiri:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B1220; --panel:#131B2E; --panel-2:#1A2438;
+    --gold:#C9A66B; --gold-soft:rgba(201,166,107,0.35);
+    --green:#5C9A7B; --red:#B5645A;
+    --ink:#F2EDE3; --muted:#8B94A7; --line:rgba(201,166,107,0.16);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background: radial-gradient(1200px 600px at 50% -10%, #16213A 0%, var(--bg) 60%);
+    color:var(--ink); font-family:'Inter',sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+  .wrap{ max-width:720px; margin:0 auto; padding:24px 18px 70px; }
+  .kicker{ font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); text-align:center; margin-bottom:6px; }
+  h1.title{ font-family:'Fraunces',serif; font-weight:600; font-size:clamp(24px,6vw,34px); text-align:center; margin:0 0 4px; }
+  .progress-bar-outer{ height:6px; background:var(--panel); border-radius:6px; overflow:hidden; margin: 16px 0 6px; }
+  .progress-bar-inner{ height:100%; background:linear-gradient(90deg, var(--teal,#3F6259), var(--gold)); transition:width .4s; }
+  .progress-label{ text-align:center; font-size:12px; color:var(--muted); margin-bottom:22px; }
+
+  .card{ background:linear-gradient(180deg,var(--panel),var(--panel-2)); border:1px solid var(--line); border-radius:18px; padding:22px; margin-bottom:16px; }
+  .center{ text-align:center; }
+
+  .nav-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .nav-btn{ background:none; border:none; color:var(--muted); font-size:13px; cursor:pointer; padding:6px 8px; }
+  .nav-btn:hover{ color:var(--gold); }
+  .nav-btn:disabled{ opacity:.3; cursor:default; }
+
+  .star-frame{ position:relative; width:150px; height:150px; margin:0 auto 6px; }
+  .star-frame svg{ position:absolute; inset:0; animation:spin 60s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg);} }
+  .star-frame .core{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; }
+  .day-arabic{ font-family:'Amiri',serif; font-size:34px; color:var(--gold); }
+  .day-translit{ font-size:12px; margin-top:4px; }
+  .day-meaning{ font-family:'Fraunces',serif; font-style:italic; font-size:18px; margin:6px 0 2px; }
+
+  .btn{ display:inline-block; background:transparent; border:1px solid var(--gold); color:var(--gold); padding:11px 22px; border-radius:10px; cursor:pointer; font-size:14px; font-weight:600; font-family:'Inter',sans-serif; }
+  .btn:hover{ background:var(--gold); color:#0B1220; }
+  .btn:disabled{ opacity:.4; cursor:default; background:none; color:var(--gold); }
+  .btn.secondary{ border-color:var(--line); color:var(--muted); }
+  .btn.secondary:hover{ background:var(--panel-2); color:var(--ink); }
+  .btn-row{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:14px; }
+
+  .section-title{ font-family:'Fraunces',serif; font-size:16px; color:var(--gold); margin:0 0 8px; }
+  .section-body{ font-size:14px; line-height:1.7; color:var(--ink); white-space:pre-wrap; }
+  .loading{ color:var(--muted); font-size:14px; text-align:center; padding:30px 0; }
+  .dot-anim::after{ content:''; animation:dots 1.4s steps(4,end) infinite; }
+  @keyframes dots{ 0%{content:'';} 25%{content:'.';} 50%{content:'..';} 75%{content:'...';} }
+
+  .memory-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:10px 0; }
+  .mem-card{ aspect-ratio:1/1; background:var(--panel-2); border:1px solid var(--line); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:13px; text-align:center; padding:4px; user-select:none; }
+  .mem-card.arabic{ font-family:'Amiri',serif; font-size:20px; color:var(--gold); }
+  .mem-card.flipped{ border-color:var(--gold); background:var(--panel); }
+  .mem-card.matched{ border-color:var(--green); opacity:.4; cursor:default; }
+  .mem-status{ text-align:center; color:var(--muted); font-size:13px; margin-top:8px; }
+
+  .quiz-q{ font-size:14px; margin-bottom:10px; color:var(--ink); }
+  .quiz-opt{ background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:11px; margin-bottom:8px; cursor:pointer; font-size:14px; }
+  .quiz-opt:hover{ border-color:var(--gold-soft); }
+  .quiz-opt.correct{ border-color:var(--green); background:rgba(92,154,123,.15); }
+  .quiz-opt.wrong{ border-color:var(--red); background:rgba(181,100,90,.15); }
+  .quiz-block{ margin-bottom:20px; padding-bottom:16px; border-bottom:1px dashed var(--line); }
+  .quiz-block:last-child{ border-bottom:none; }
+
+  canvas#cardCanvas{ display:none; }
+  #cardPreview{ max-width:100%; border-radius:14px; margin:10px 0; border:1px solid var(--line); }
+
+  footer{ text-align:center; color:var(--muted); font-size:11px; margin-top:30px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">Asma-ul-Husna · Session du jour</div>
+  <h1 class="title">Notre parcours à deux</h1>
+  <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
+  <div class="progress-label" id="progressLabel">Jour 1 / 99</div>
+
+  <div class="nav-row">
+    <button class="nav-btn" id="prevDayBtn">◀ Jour précédent</button>
+    <button class="nav-btn" id="todayBtn" style="display:none;">Revenir au jour actuel →</button>
+    <button class="nav-btn" id="nextDayBtn">Jour suivant ▶</button>
+  </div>
+
+  <div id="app"></div>
+
+  <footer>Un nom à la fois, pas à pas. 🌙</footer>
+</div>
+
+<canvas id="cardCanvas" width="800" height="1000"></canvas>
+
+<script>
+const NAMES = [
+{a:"الرحمن", t:"Ar-Rahman", f:"Le Tout Miséricordieux", r:"Sa miséricorde précède et englobe toute chose, pour toute créature."},
+{a:"الرحيم", t:"Ar-Rahim", f:"Le Très Miséricordieux", r:"Une miséricorde particulière, réservée à ceux qui croient et se tournent vers Lui."},
+{a:"الملك", t:"Al-Malik", f:"Le Roi, le Souverain", r:"Le seul vrai Maître de toute chose, sans associé ni limite à Son règne."},
+{a:"القدوس", t:"Al-Quddus", f:"Le Pur, l'Absolument Saint", r:"Exempt de toute imperfection, au-dessus de tout ce qu'on pourrait Lui attribuer à tort."},
+{a:"السلام", t:"As-Salam", f:"La Source de la paix", r:"Celui qui préserve Sa création de tout mal et accorde la paix véritable."},
+{a:"المؤمن", t:"Al-Mu'min", f:"Celui qui donne la sécurité", r:"Il rassure les cœurs et protège ceux qui se confient à Lui."},
+{a:"المهيمن", t:"Al-Muhaymin", f:"Le Vigilant, le Protecteur", r:"Il veille sur toute chose et connaît le moindre détail de la création."},
+{a:"العزيز", t:"Al-Aziz", f:"Le Tout-Puissant", r:"Invincible, jamais vaincu ni diminué en quoi que ce soit."},
+{a:"الجبار", t:"Al-Jabbar", f:"Celui qui contraint avec force", r:"Il redresse ce qui est brisé et impose Sa volonté avec une puissance absolue."},
+{a:"المتكبر", t:"Al-Mutakabbir", f:"Le Majestueux", r:"Seul digne de grandeur véritable, au-dessus de tout orgueil créé."},
+{a:"الخالق", t:"Al-Khaliq", f:"Le Créateur", r:"Celui qui fait exister toute chose à partir du néant, selon Sa sagesse."},
+{a:"البارئ", t:"Al-Bari", f:"Celui qui donne un commencement", r:"Il façonne chaque être avec précision, sans défaut ni imperfection."},
+{a:"المصور", t:"Al-Musawwir", f:"Celui qui donne forme", r:"Il donne à chaque créature une apparence unique et distincte."},
+{a:"الغفار", t:"Al-Ghaffar", f:"Celui qui pardonne sans cesse", r:"Il efface les péchés répétés de ceux qui reviennent vers Lui sincèrement."},
+{a:"القهار", t:"Al-Qahhar", f:"Le Dominateur suprême", r:"Rien ne Lui résiste ; toute force plie devant la Sienne."},
+{a:"الوهاب", t:"Al-Wahhab", f:"Le Donateur généreux", r:"Il donne abondamment, sans rien attendre en retour."},
+{a:"الرزاق", t:"Ar-Razzaq", f:"Le Pourvoyeur", r:"Il assure la subsistance de chaque être vivant, visible ou caché."},
+{a:"الفتاح", t:"Al-Fattah", f:"Celui qui ouvre les issues", r:"Il ouvre les portes fermées et tranche entre le vrai et le faux."},
+{a:"العليم", t:"Al-'Alim", f:"L'Omniscient", r:"Rien ne Lui échappe, ni dans les cieux ni dans les cœurs."},
+{a:"القابض", t:"Al-Qabid", f:"Celui qui restreint", r:"Il resserre à qui Il veut, par sagesse et selon une raison qui Lui appartient."},
+{a:"الباسط", t:"Al-Basit", f:"Celui qui étend", r:"Il élargit les moyens et les cœurs de qui Il veut, avec générosité."},
+{a:"الخافض", t:"Al-Khafid", f:"Celui qui abaisse", r:"Il abaisse l'orgueilleux et rappelle la vraie mesure des choses."},
+{a:"الرافع", t:"Ar-Rafi", f:"Celui qui élève", r:"Il élève en rang et en dignité ceux qu'Il choisit."},
+{a:"المعز", t:"Al-Mu'izz", f:"Celui qui honore", r:"Il accorde l'honneur véritable à qui Il veut, sans que nul ne puisse s'y opposer."},
+{a:"المذل", t:"Al-Mudhill", f:"Celui qui humilie", r:"Il rabaisse celui qui s'égare dans l'orgueil, par justice."},
+{a:"السميع", t:"As-Sami", f:"Celui qui entend tout", r:"Il entend chaque parole, chaque prière, même murmurée en secret."},
+{a:"البصير", t:"Al-Basir", f:"Celui qui voit tout", r:"Rien de visible ni de caché n'échappe à Son regard."},
+{a:"الحكم", t:"Al-Hakam", f:"L'Arbitre suprême", r:"Le jugement dernier et véritable Lui revient seul."},
+{a:"العدل", t:"Al-'Adl", f:"Le Juste", r:"Il ne commet jamais d'injustice, envers aucune créature."},
+{a:"اللطيف", t:"Al-Latif", f:"Le Subtil, le Bienveillant", r:"Il perçoit les détails les plus fins et prend soin avec une douceur insoupçonnée."},
+{a:"الخبير", t:"Al-Khabir", f:"Celui qui est informé de tout", r:"Il connaît la réalité profonde des choses, au-delà des apparences."},
+{a:"الحليم", t:"Al-Halim", f:"Le Très Doux, l'Indulgent", r:"Il retarde le châtiment par clémence, laissant place au repentir."},
+{a:"العظيم", t:"Al-'Azim", f:"L'Immense, le Magnifique", r:"Sa grandeur dépasse toute mesure et toute comparaison."},
+{a:"الغفور", t:"Al-Ghafur", f:"Le Pardonneur", r:"Il couvre les fautes et accorde un pardon large et généreux."},
+{a:"الشكور", t:"Ash-Shakur", f:"Le Reconnaissant", r:"Il récompense largement le moindre effort accompli sincèrement."},
+{a:"العلي", t:"Al-'Aliyy", f:"Le Très Haut", r:"Élevé au-dessus de toute chose, en rang comme en essence."},
+{a:"الكبير", t:"Al-Kabir", f:"Le Grand", r:"Plus grand que tout ce qui peut être imaginé ou décrit."},
+{a:"الحفيظ", t:"Al-Hafiz", f:"Le Gardien", r:"Il préserve la création et garde en mémoire chaque œuvre accomplie."},
+{a:"المقيت", t:"Al-Muqit", f:"Celui qui nourrit", r:"Il fournit à chaque être ce dont il a besoin pour subsister."},
+{a:"الحسيب", t:"Al-Hasib", f:"Celui qui suffit", r:"Il suffit à qui se confie en Lui, et Il tient le compte exact de toute chose."},
+{a:"الجليل", t:"Al-Jalil", f:"Le Majestueux", r:"Digne d'une vénération et d'un respect infinis."},
+{a:"الكريم", t:"Al-Karim", f:"Le Généreux", r:"Il donne avec noblesse, sans compter et sans jamais s'appauvrir."},
+{a:"الرقيب", t:"Ar-Raqib", f:"Celui qui observe", r:"Il surveille chaque acte, chaque intention, à tout instant."},
+{a:"المجيب", t:"Al-Mujib", f:"Celui qui répond", r:"Il exauce l'invocation de celui qui L'appelle avec sincérité."},
+{a:"الواسع", t:"Al-Wasi", f:"Le Vaste", r:"Sa générosité et Sa connaissance embrassent toute chose sans limite."},
+{a:"الحكيم", t:"Al-Hakim", f:"Le Sage", r:"Chaque décision et chaque création répond à une sagesse parfaite."},
+{a:"الودود", t:"Al-Wadud", f:"Le Bien-Aimant", r:"Il aime Ses serviteurs sincères et attire leur amour vers Lui."},
+{a:"المجيد", t:"Al-Majid", f:"Le Glorieux", r:"D'une noblesse et d'une générosité qui ne connaissent pas de limite."},
+{a:"الباعث", t:"Al-Ba'ith", f:"Celui qui ressuscite", r:"Il redonnera vie à toute créature le Jour du Jugement."},
+{a:"الشهيد", t:"Ash-Shahid", f:"Le Témoin", r:"Il est témoin de chaque acte et de chaque parole, sans exception."},
+{a:"الحق", t:"Al-Haqq", f:"La Vérité absolue", r:"Son existence et Sa parole sont la vérité même, sans doute possible."},
+{a:"الوكيل", t:"Al-Wakil", f:"Le Garant", r:"Celui à qui l'on peut confier entièrement ses affaires."},
+{a:"القوي", t:"Al-Qawiyy", f:"Le Fort", r:"D'une force qui ne faiblit ni ne diminue jamais."},
+{a:"المتين", t:"Al-Matin", f:"L'Inébranlable", r:"Ferme et solide, sans le moindre effort dans Sa puissance."},
+{a:"الولي", t:"Al-Waliyy", f:"Le Protecteur, l'Allié", r:"Il prend en charge et soutient ceux qui se rapprochent de Lui."},
+{a:"الحميد", t:"Al-Hamid", f:"Le Digne de louange", r:"Loué en toute circonstance, pour chacun de Ses actes et attributs."},
+{a:"المحصي", t:"Al-Muhsi", f:"Celui qui dénombre tout", r:"Il tient un compte exact de chaque chose, jusqu'au plus infime détail."},
+{a:"المبدئ", t:"Al-Mubdi", f:"L'Initiateur", r:"Celui qui a créé toute chose une première fois, sans modèle antérieur."},
+{a:"المعيد", t:"Al-Mu'id", f:"Celui qui restaure", r:"Il ramènera la création à la vie après la mort, comme Il l'a créée."},
+{a:"المحيي", t:"Al-Muhyi", f:"Celui qui donne la vie", r:"Il insuffle la vie à ce qui était sans vie."},
+{a:"المميت", t:"Al-Mumit", f:"Celui qui donne la mort", r:"Il détermine le terme de chaque existence, avec sagesse."},
+{a:"الحي", t:"Al-Hayy", f:"Le Vivant", r:"D'une vie parfaite et éternelle, sans commencement ni fin."},
+{a:"القيوم", t:"Al-Qayyum", f:"Celui qui subsiste par Lui-même", r:"Il n'a besoin de rien, et toute chose dépend de Lui pour exister."},
+{a:"الواجد", t:"Al-Wajid", f:"Celui qui ne manque de rien", r:"Il trouve et possède tout ce qu'Il veut, sans jamais être dans le besoin."},
+{a:"الماجد", t:"Al-Majid (le Noble)", f:"Le Noble", r:"D'une générosité et d'une grandeur qui suscitent le respect."},
+{a:"الواحد", t:"Al-Wahid", f:"L'Unique en Son genre", r:"Sans semblable ni égal, unique dans Son essence."},
+{a:"الأحد", t:"Al-Ahad", f:"L'Unique absolu", r:"Un, sans division ni parts, fondement du témoignage de foi."},
+{a:"الصمد", t:"As-Samad", f:"Celui dont tout dépend", r:"Toute chose se tourne vers Lui dans le besoin, alors que Lui n'a besoin de rien."},
+{a:"القادر", t:"Al-Qadir", f:"Celui qui a tout pouvoir", r:"Rien ne Lui est impossible ; Sa capacité s'étend à toute chose."},
+{a:"المقتدر", t:"Al-Muqtadir", f:"Le Tout-Puissant absolu", r:"Une puissance totale, qui s'exerce sans effort ni obstacle."},
+{a:"المقدم", t:"Al-Muqaddim", f:"Celui qui fait avancer", r:"Il place en avant qui Il veut, selon une sagesse qui Lui appartient."},
+{a:"المؤخر", t:"Al-Mu'akhkhir", f:"Celui qui fait attendre", r:"Il retarde ou recule qui Il veut, par justice et par sagesse."},
+{a:"الأول", t:"Al-Awwal", f:"Le Premier", r:"Rien n'existait avant Lui ; Il est sans commencement."},
+{a:"الآخر", t:"Al-Akhir", f:"Le Dernier", r:"Rien ne subsistera après tout, sinon Lui ; Il est sans fin."},
+{a:"الظاهر", t:"Az-Zahir", f:"L'Évident, le Manifeste", r:"Sa réalité se révèle à travers les signes de la création."},
+{a:"الباطن", t:"Al-Batin", f:"Le Caché", r:"Son essence dépasse toute perception, aussi proche soit-Il."},
+{a:"الوالي", t:"Al-Wali", f:"Celui qui gouverne toute chose", r:"Il administre les affaires de la création avec une autorité totale."},
+{a:"المتعالي", t:"Al-Muta'ali", f:"Le Très Élevé", r:"Bien au-dessus de tout ce qu'on pourrait imaginer ou Lui associer."},
+{a:"البر", t:"Al-Barr", f:"Le Bienfaisant", r:"Il comble Ses serviteurs de bienfaits, visibles et invisibles."},
+{a:"التواب", t:"At-Tawwab", f:"Celui qui accepte le repentir", r:"Il revient sans cesse vers celui qui se repent avec sincérité."},
+{a:"المنتقم", t:"Al-Muntaqim", f:"Celui qui punit avec justice", r:"Il rétablit le droit face à l'injustice persistante, avec équité."},
+{a:"العفو", t:"Al-'Afuww", f:"Celui qui efface les fautes", r:"Il pardonne au point d'effacer la trace même de la faute."},
+{a:"الرؤوف", t:"Ar-Ra'uf", f:"Le Tout Compatissant", r:"D'une douceur et d'une tendresse particulières envers Ses serviteurs."},
+{a:"مالك الملك", t:"Malik-ul-Mulk", f:"Le Souverain du Royaume", r:"Il donne et retire l'autorité à qui Il veut, sans contestation possible."},
+{a:"ذو الجلال والإكرام", t:"Dhul-Jalali wal-Ikram", f:"Le Maître de la Majesté et de la Générosité", r:"Il réunit à la fois une grandeur infinie et une générosité sans limite."},
+{a:"المقسط", t:"Al-Muqsit", f:"L'Équitable", r:"Il rétablit la justice avec exactitude, sans jamais pencher d'un côté."},
+{a:"الجامع", t:"Al-Jami", f:"Celui qui rassemble", r:"Il réunira toute la création le Jour du Jugement, sans exception."},
+{a:"الغني", t:"Al-Ghani", f:"Celui qui se suffit à Lui-même", r:"Il n'a besoin d'aucune de Ses créatures pour exister ou régner."},
+{a:"المغني", t:"Al-Mughni", f:"Celui qui enrichit", r:"Il comble de richesse, matérielle ou intérieure, qui Il veut."},
+{a:"المانع", t:"Al-Mani", f:"Celui qui protège en empêchant", r:"Il retient et écarte ce qui pourrait nuire, par sagesse."},
+{a:"الضار", t:"Ad-Darr", f:"Celui qui permet l'épreuve", r:"Il autorise, avec une sagesse qui échappe souvent à l'homme, l'épreuve ou la difficulté."},
+{a:"النافع", t:"An-Nafi", f:"Celui qui procure le bien", r:"Il fait parvenir le bienfait et le bénéfice à qui Il veut."},
+{a:"النور", t:"An-Nur", f:"La Lumière", r:"Il illumine les cieux, la terre et les cœurs qui se tournent vers Lui."},
+{a:"الهادي", t:"Al-Hadi", f:"Celui qui guide", r:"Il conduit vers le droit chemin ceux qui cherchent Sa guidée sincèrement."},
+{a:"البديع", t:"Al-Badi", f:"L'Inventeur incomparable", r:"Il crée sans modèle préexistant, d'une manière absolument originale."},
+{a:"الباقي", t:"Al-Baqi", f:"Celui qui demeure à jamais", r:"Il subsiste éternellement, quand tout le reste connaît une fin."},
+{a:"الوارث", t:"Al-Warith", f:"L'Héritier ultime", r:"Tout reviendra à Lui seul, lorsque toute chose créée aura disparu."},
+{a:"الرشيد", t:"Ar-Rashid", f:"Celui qui guide à la droiture", r:"Ses décisions mènent toujours à la meilleure fin, sans jamais s'égarer."},
+{a:"الصبور", t:"As-Sabur", f:"Le Très Patient", r:"Il accorde un délai à Ses serviteurs, sans hâte dans le châtiment."}
+];
+
+// ---------- persistence ----------
+function loadProgress(){
+  try{ return JSON.parse(localStorage.getItem('asma_app_progress')) || { completedDays: 0 }; }
+  catch(e){ return { completedDays: 0 }; }
+}
+function saveProgress(p){ try{ localStorage.setItem('asma_app_progress', JSON.stringify(p)); }catch(e){} }
+
+let progress = loadProgress();
+let viewingDay = progress.completedDays; // 0-indexed day being viewed
+let stage = 'intro'; // intro -> lesson -> game -> recap -> card
+let lessonData = null; // {explication, comprendre, pourquoi}
+let quizData = null;
+
+const app = document.getElementById('app');
+const maxDay = NAMES.length - 1;
+
+function isReviewMode(){ return viewingDay < progress.completedDays; }
+
+// ---------- Claude API helper ----------
+async function askClaude(systemPrompt, userPrompt){
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      model:"claude-sonnet-4-6",
+      max_tokens:1000,
+      system: systemPrompt,
+      messages:[{ role:"user", content:userPrompt }]
+    })
+  });
+  const data = await res.json();
+  const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
+  const clean = text.replace(/```json|```/g,'').trim();
+  return JSON.parse(clean);
+}
+
+async function generateLesson(name){
+  const sys = "Tu es un guide pédagogique pour l'apprentissage des 99 noms d'Allah, dans un cadre général de l'islam, sans référence à une école ou confrérie spécifique. Réponds UNIQUEMENT en JSON valide, sans aucun texte avant ou après, sans balises markdown. Format exact: {\"explication\": \"...\", \"comprendre\": \"...\", \"pourquoi\": \"...\"}. Chaque champ est en français, ton chaleureux et clair, 70 à 130 mots, adapté à une session d'apprentissage quotidienne de 15-20 minutes pour un couple de jeunes musulmans.";
+  const usr = `Nom du jour : ${name.a} (${name.t}), signifiant "${name.f}". 
+- "explication": présente le sens spirituel de ce nom et, si pertinent, sa place dans le Coran ou la Sunna.
+- "comprendre": synthétise en points clés ce qu'il faut retenir de ce nom.
+- "pourquoi": une réflexion personnelle sur pourquoi ce nom peut résonner dans une vie quotidienne, aujourd'hui.`;
+  try{
+    return await askClaude(sys, usr);
+  }catch(e){
+    return { explication: name.r, comprendre: `Point clé à retenir : ${name.f}.`, pourquoi: "Prenez un moment pour méditer sur ce nom dans votre journée." };
+  }
+}
+
+async function generateRecap(name, lesson){
+  const sys = "Tu génères un mini-quiz de récapitulatif. Réponds UNIQUEMENT en JSON valide, sans texte autour, format: {\"questions\":[{\"q\":\"...\",\"options\":[\"...\",\"...\",\"...\",\"...\"],\"correct\":0}]}. Génère exactement 3 questions courtes, en français, basées sur le contenu fourni, avec 4 options chacune (une seule correcte).";
+  const usr = `Nom : ${name.a} (${name.t}) — ${name.f}.\nExplication : ${lesson.explication}\nÀ comprendre : ${lesson.comprendre}`;
+  try{
+    return await askClaude(sys, usr);
+  }catch(e){
+    return { questions: [{ q: `Que signifie ${name.t} ?`, options: [name.f, "Le Créateur des mondes", "Le Souverain", "Le Témoin"], correct: 0 }] };
+  }
+}
+
+// ---------- rendering ----------
+function updateHeader(){
+  document.getElementById('progressBar').style.width = ((viewingDay+1)/NAMES.length*100).toFixed(1) + '%';
+  document.getElementById('progressLabel').textContent = `Jour ${viewingDay+1} / ${NAMES.length}` + (isReviewMode() ? ' · révision' : '');
+  document.getElementById('prevDayBtn').disabled = viewingDay <= 0;
+  document.getElementById('nextDayBtn').disabled = viewingDay >= progress.completedDays || viewingDay >= maxDay;
+  document.getElementById('todayBtn').style.display = isReviewMode() ? 'inline-block' : 'none';
+}
+
+function renderIntro(){
+  const n = NAMES[viewingDay];
+  app.innerHTML = `
+    <div class="card center">
+      <div class="star-frame">
+        <svg viewBox="0 0 150 150"><polygon points="75,8 88,46 125,46 95,68 106,107 75,85 44,107 55,68 25,46 62,46" fill="none" stroke="#C9A66B" stroke-width="1.2" opacity="0.55"/></svg>
+        <div class="core"><div class="day-arabic">${n.a}</div><div class="day-translit">${n.t}</div></div>
+      </div>
+      <div class="day-meaning">${n.f}</div>
+      ${isReviewMode()
+        ? `<div class="section-body" style="margin-top:10px;">${n.r}</div>`
+        : `<div class="btn-row"><button class="btn" id="startBtn">Commencer la session (15-20 min)</button></div>`
+      }
+    </div>
+  `;
+  if(!isReviewMode()){
+    document.getElementById('startBtn').addEventListener('click', startLesson);
+  }
+}
+
+async function startLesson(){
+  stage = 'lesson';
+  app.innerHTML = `<div class="card"><div class="loading">L'explication du nom se prépare<span class="dot-anim"></span></div></div>`;
+  const n = NAMES[viewingDay];
+  lessonData = await generateLesson(n);
+  renderLesson();
+}
+
+let lessonStep = 0; // 0 explication, 1 comprendre, 2 pourquoi
+function renderLesson(){
+  const n = NAMES[viewingDay];
+  const steps = [
+    { title:"L'explication du nom", body: lessonData.explication },
+    { title:"Que dois-je comprendre ?", body: lessonData.comprendre },
+    { title:"Pourquoi ce nom, pourquoi maintenant ?", body: lessonData.pourquoi }
+  ];
+  const s = steps[lessonStep];
+  app.innerHTML = `
+    <div class="card">
+      <div class="section-title">${n.t} · ${s.title}</div>
+      <div class="section-body">${s.body}</div>
+      <div class="btn-row">
+        ${lessonStep < 2 ? `<button class="btn" id="lessonNextBtn">Suite</button>` : `<button class="btn" id="toGameBtn">Passer au jeu memory</button>`}
+      </div>
+    </div>
+  `;
+  if(lessonStep < 2){
+    document.getElementById('lessonNextBtn').addEventListener('click', () => { lessonStep++; renderLesson(); });
+  } else {
+    document.getElementById('toGameBtn').addEventListener('click', () => { lessonStep = 0; startGame(); });
+  }
+}
+
+// ---------- memory game ----------
+function startGame(){
+  stage = 'game';
+  const others = [];
+  const pool = NAMES.filter((_, i) => i !== viewingDay);
+  while(others.length < 5){
+    const r = pool[Math.floor(Math.random()*pool.length)];
+    if(!others.includes(r)) others.push(r);
+  }
+  const set = [NAMES[viewingDay], ...others];
+  let cards = [];
+  set.forEach((n, i) => {
+    cards.push({ id:i, type:'a', label:n.a, matchKey:i });
+    cards.push({ id:i, type:'f', label:n.f, matchKey:i });
+  });
+  cards = cards.sort(() => Math.random()-0.5);
+
+  let flipped = [];
+  let matchedCount = 0;
+  let locked = false;
+
+  function render(){
+    app.innerHTML = `
+      <div class="card">
+        <div class="section-title">Jeu memory · relie le nom à son sens</div>
+        <div class="memory-grid" id="memGrid"></div>
+        <div class="mem-status" id="memStatus">${matchedCount} / ${set.length} paires trouvées</div>
+      </div>
+    `;
+    const grid = document.getElementById('memGrid');
+    cards.forEach((c, idx) => {
+      const el = document.createElement('div');
+      const isFlipped = flipped.includes(idx) || c.matched;
+      el.className = 'mem-card' + (c.type==='a' ? ' arabic' : '') + (isFlipped ? ' flipped' : '') + (c.matched ? ' matched' : '');
+      el.textContent = isFlipped ? c.label : '?';
+      el.addEventListener('click', () => handleFlip(idx));
+      grid.appendChild(el);
+    });
+    if(matchedCount === set.length){
+      const div = document.createElement('div');
+      div.className = 'btn-row';
+      div.innerHTML = `<button class="btn" id="toRecapBtn">Passer au récap</button>`;
+      document.querySelector('.card').appendChild(div);
+      document.getElementById('toRecapBtn').addEventListener('click', startRecap);
+    }
+  }
+
+  function handleFlip(idx){
+    if(locked || cards[idx].matched || flipped.includes(idx)) return;
+    flipped.push(idx);
+    render();
+    if(flipped.length === 2){
+      locked = true;
+      const [i1, i2] = flipped;
+      if(cards[i1].matchKey === cards[i2].matchKey && cards[i1].type !== cards[i2].type){
+        cards[i1].matched = true; cards[i2].matched = true;
+        matchedCount++;
+        flipped = []; locked = false;
+        render();
+      } else {
+        setTimeout(() => { flipped = []; locked = false; render(); }, 700);
+      }
+    }
+  }
+  render();
+}
+
+// ---------- recap ----------
+async function startRecap(){
+  stage = 'recap';
+  app.innerHTML = `<div class="card"><div class="loading">Préparation du récap<span class="dot-anim"></span></div></div>`;
+  const n = NAMES[viewingDay];
+  quizData = await generateRecap(n, lessonData);
+  renderRecap();
+}
+
+function renderRecap(){
+  const n = NAMES[viewingDay];
+  let html = `<div class="card"><div class="section-title">Récap express · ${n.t}</div>`;
+  quizData.questions.forEach((q, qi) => {
+    html += `<div class="quiz-block" data-qi="${qi}"><div class="quiz-q">${q.q}</div>`;
+    q.options.forEach((opt, oi) => {
+      html += `<div class="quiz-opt" data-qi="${qi}" data-oi="${oi}">${opt}</div>`;
+    });
+    html += `</div>`;
+  });
+  html += `<div class="btn-row"><button class="btn" id="toCardBtn" disabled>Voir la fiche du jour</button></div></div>`;
+  app.innerHTML = html;
+
+  let answered = 0;
+  document.querySelectorAll('.quiz-opt').forEach(el => {
+    el.addEventListener('click', () => {
+      const qi = +el.dataset.qi, oi = +el.dataset.oi;
+      const block = document.querySelector(`.quiz-block[data-qi="${qi}"]`);
+      if(block.dataset.done) return;
+      block.dataset.done = '1';
+      answered++;
+      const correct = quizData.questions[qi].correct;
+      block.querySelectorAll('.quiz-opt').forEach(o => {
+        const ooi = +o.dataset.oi;
+        if(ooi === correct) o.classList.add('correct');
+        else if(ooi === oi) o.classList.add('wrong');
+      });
+      if(answered === quizData.questions.length){
+        document.getElementById('toCardBtn').disabled = false;
+      }
+    });
+  });
+  document.getElementById('toCardBtn').addEventListener('click', showCard);
+}
+
+// ---------- daily card export ----------
+function showCard(){
+  stage = 'card';
+  const n = NAMES[viewingDay];
+  app.innerHTML = `
+    <div class="card center">
+      <div class="section-title">Fiche du jour</div>
+      <img id="cardPreview" alt="Fiche du jour" />
+      <div class="btn-row">
+        <a class="btn" id="downloadBtn" download="asma-jour-${viewingDay+1}-${n.t}.png">Télécharger la fiche</a>
+        <button class="btn secondary" id="finishBtn">Terminer la session</button>
+      </div>
+    </div>
+  `;
+  drawCard(n).then(dataUrl => {
+    document.getElementById('cardPreview').src = dataUrl;
+    document.getElementById('downloadBtn').href = dataUrl;
+  });
+  document.getElementById('finishBtn').addEventListener('click', finishSession);
+}
+
+async function drawCard(n){
+  try{ await document.fonts.load("60px Amiri"); await document.fonts.load("italic 30px Fraunces"); await document.fonts.load("600 22px Fraunces"); await document.fonts.load("15px Inter"); }catch(e){}
+  const canvas = document.getElementById('cardCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const grad = ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0, '#16213A'); grad.addColorStop(1, '#0B1220');
+  ctx.fillStyle = grad; ctx.fillRect(0,0,W,H);
+
+  ctx.strokeStyle = 'rgba(201,166,107,0.5)'; ctx.lineWidth = 3;
+  ctx.strokeRect(28,28,W-56,H-56);
+
+  ctx.fillStyle = '#C9A66B';
+  ctx.font = "13px Inter"; ctx.textAlign = 'center';
+  ctx.fillText(`ASMA-UL-HUSNA · JOUR ${viewingDay+1} / ${NAMES.length}`, W/2, 90);
+
+  ctx.font = "80px Amiri"; ctx.fillStyle = '#C9A66B';
+  ctx.fillText(n.a, W/2, 210);
+
+  ctx.font = "24px Inter"; ctx.fillStyle = '#F2EDE3';
+  ctx.fillText(n.t, W/2, 250);
+
+  ctx.font = "italic 600 32px Fraunces"; ctx.fillStyle = '#F2EDE3';
+  wrapText(ctx, n.f, W/2, 310, W-160, 40, true);
+
+  ctx.font = "600 18px Fraunces"; ctx.fillStyle = '#C9A66B'; ctx.textAlign='left';
+  ctx.fillText("Point clé à retenir", 80, 420);
+  ctx.font = "16px Inter"; ctx.fillStyle = '#F2EDE3';
+  wrapText(ctx, lessonData ? lessonData.comprendre : n.r, 80, 455, W-160, 26, false);
+
+  ctx.font = "13px Inter"; ctx.fillStyle = '#8B94A7'; ctx.textAlign='center';
+  ctx.fillText("Un nom à la fois, pas à pas 🌙", W/2, H-60);
+
+  return canvas.toDataURL('image/png');
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight, centered){
+  const words = text.split(' ');
+  let line = '';
+  let lines = [];
+  words.forEach(w => {
+    const test = line + w + ' ';
+    if(ctx.measureText(test).width > maxWidth && line !== ''){
+      lines.push(line); line = w + ' ';
+    } else { line = test; }
+  });
+  lines.push(line);
+  ctx.textAlign = centered ? 'center' : 'left';
+  lines.forEach((l, i) => ctx.fillText(l.trim(), x, y + i*lineHeight));
+}
+
+function finishSession(){
+  if(viewingDay === progress.completedDays && progress.completedDays < NAMES.length){
+    progress.completedDays++;
+    saveProgress(progress);
+  }
+  viewingDay = Math.min(progress.completedDays, maxDay);
+  stage = 'intro';
+  lessonData = null; quizData = null;
+  updateHeader();
+  renderIntro();
+}
+
+// ---------- day navigation ----------
+document.getElementById('prevDayBtn').addEventListener('click', () => {
+  if(viewingDay > 0){ viewingDay--; stage='intro'; lessonData=null; quizData=null; updateHeader(); renderIntro(); }
+});
+document.getElementById('nextDayBtn').addEventListener('click', () => {
+  if(viewingDay < progress.completedDays && viewingDay < maxDay){ viewingDay++; stage='intro'; lessonData=null; quizData=null; updateHeader(); renderIntro(); }
+});
+document.getElementById('todayBtn').addEventListener('click', () => {
+  viewingDay = Math.min(progress.completedDays, maxDay); stage='intro'; lessonData=null; quizData=null; updateHeader(); renderIntro();
+});
+
+// ---------- init ----------
+updateHeader();
+renderIntro();
+</script>
+</body>
+</html>
